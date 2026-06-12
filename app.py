@@ -79,62 +79,62 @@ col3.metric("🧾 Nº de Empresas", num_empresas)
 st.divider()
 
 # ------------------------------------------------------------------
-# Gráfico 1 - Vendas ao longo do tempo (cada categoria é uma série)
+# Gráfico 1 - Vendas Médias ao longo do tempo (cada categoria é uma série)
 # ------------------------------------------------------------------
-st.subheader("📅 Vendas ao longo do tempo por categoria")
+st.subheader("📅 Vendas Médias ao longo do tempo por categoria")
 
-# Agrupar a soma de Sales em cada mês por Category
+# Agrupar a média de Vendas e Serviços em cada ano por Sector de Atividade
 sales_over_time = (
     filtered_df
     .groupby(
-        [pd.Grouper(key="Order Date", freq="ME"), "Category"]
-    )["Sales"]
+        [pd.Grouper(key="Ano", freq="ME"), "SectorAtividade"]
+    )["VendasServicos"]
     .sum()
     .reset_index()
 )
 
 # Criar uma pivot table
 sales_pivot = sales_over_time.pivot(
-    index="Order Date",
-    columns="Category",
-    values="Sales"
+    index="Ano",
+    columns="SectorAtividade",
+    values="VendasServicos"
 )
 
 st.line_chart(sales_pivot)
 
 # --------------------------------------------------
-# Gráfico 2 - Vendas por Região
+# Gráfico 2 - Vendas Médias por Tamanho da Empresa
 # --------------------------------------------------
-st.subheader("🌍 Vendas por Região")
+st.subheader("🌍 Vendas Médias por Tamanho da Empresa")
 
-# Agrupar a soma de Sales por Region
-sales_by_region = (
+# Agrupar a média de Vendas e Serviços por Tamanho da Empresa
+sales_by_size = (
     filtered_df
-    .groupby("Region")["Sales"]
-    .sum()
+    .groupby("TamanhoEmpresa")["VendasServicos"]
+    .mean()
 )
 
 st.bar_chart(sales_by_region)
 
 st.divider()
 
-# --------------------------------------------------
-# Table - Top produtos
-# --------------------------------------------------
-st.subheader("🏆 Top 10 produtos por vendas")
+# --------------------------------------------------------
+# Table - Top Sectores de Atividade com Mais Vendas Médias
+# --------------------------------------------------------
+st.subheader("🏆 Top 10 Sectores por vendas")
 
-# Agrupar a soma de Sales por Product Name, ordenar e mostrar os top 10
+# Agrupar a média de Vendas e Serviços por Setor de Atividade, ordenar e mostrar os top 10
 top_products = (
     filtered_df
-    .groupby("Product Name")["Sales"]
+    .groupby("SectorAtividade")["VendasServiços"]
     .sum()
     .sort_values(ascending=False)
     .head(10)
 )
 
-st.dataframe(top_products)
+st.dataframe(top_sectores)
 
 # --------------------------------------------------
 # Rodapé
 # --------------------------------------------------
-st.caption("Dados: Sample Superstore")
+st.caption("Dados: Dados Económico-Financeiros de Portugal 2006-2024")
