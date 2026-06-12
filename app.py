@@ -5,12 +5,12 @@ import pandas as pd
 # Configuração da página
 # --------------------------------------------------
 st.set_page_config(
-    page_title="Superstore Dashboard", # O título que mostra na tab do browser
+    page_title="Dados Económico-Financeiros Economia Portuguesa 2006-2024", # O título que mostra na tab do browser
     layout="wide" # A opção "centered" coloca a página numa coluna central
 )
 
-st.title("📊 Superstore Dashboard")
-st.markdown("Dashboard de vendas")
+st.title("📊 Dados Económico-Financeiros Economia Portuguesa 2006-2024")
+st.markdown("Dashboard de Volume de Negócios Médio")
 
 # --------------------------------------------------
 # Carregamento dos dados
@@ -20,7 +20,7 @@ st.markdown("Dashboard de vendas")
 # Assim, sempre que houver interações com o dashboard (ex: mudar um filtro), não é necessário ler o ficheiro csv novamente
 @st.cache_data 
 def load_data():
-    file_name = "Superstore.csv"
+    file_name = "BaseDadosFinal.xlxs"
     df = pd.read_csv(file_name, parse_dates=["Order Date"])
     return df
 
@@ -31,24 +31,24 @@ df = load_data()
 # --------------------------------------------------
 st.sidebar.header("Filtros")
 
-# Filtro de Região
-sorted_regions = sorted(df["Region"].unique())
-regions = st.sidebar.multiselect(
-    "Região",
-    options=sorted_regions,
-    default=sorted_regions
+# Filtro de Sector de Atividade
+sorted_SectorAtividade = sorted(df["SectorAtividade"].unique())
+SectorAtividade = st.sidebar.multiselect(
+    "Sector de Atividade",
+    options=sorted_SectorAtividade,
+    default=sorted_SectorAtividade
 )
 
-# Filtro de Categoria
-sorted_categories = sorted(df["Category"].unique())
-categories = st.sidebar.multiselect(
-    "Categoria",
-    options=sorted_categories,
-    default=sorted_categories
+# Filtro de Tamanho de Empresa
+sorted_TamanhoEmpresa = sorted(df["TamanhoEmpresa"].unique())
+TamanhoEmpresa = st.sidebar.multiselect(
+    "Tamanho de Empresa",
+    options=sorted_TamanhoEmpresa,
+    default=sorted_TamanhoEmpresa
 )
 
 # Filtro de Ano
-years = sorted(df["Order Date"].dt.year.unique())
+years = sorted(df["Ano"].dt.year.unique())
 year_range = st.sidebar.slider(
     "Ano",
     min_value=int(min(years)),
@@ -58,23 +58,23 @@ year_range = st.sidebar.slider(
 
 # Aplicar filtros
 filtered_df = df[
-    (df["Region"].isin(regions)) &
-    (df["Category"].isin(categories)) &
-    (df["Order Date"].dt.year.between(year_range[0], year_range[1]))
+    (df["SectorAtividade"].isin(SectorAtividade)) &
+    (df["TamanhoEmpresa"].isin(TamanhoEmpresa)) &
+    (df["Ano"].dt.year.between(year_range[0], year_range[1]))
 ]
 
 # --------------------------------------------------
 # Parte superior com KPIs
 # --------------------------------------------------
-total_sales = filtered_df["Sales"].sum()
-total_profit = filtered_df["Profit"].sum()
-num_orders = filtered_df["Order ID"].nunique()
+media_VendasServicos = filtered_df["VendasServicos"].mean()
+media_ResultadoLiquido = filtered_df["RL"].mean()
+num_empresas = filtered_df["NºEmpresas"].sum()
 
 # Vamos dividir a área em 3 colunas para mostrar os KPIs lado a lado
 col1, col2, col3 = st.columns(3)
-col1.metric("💰 Vendas Totais", f"${total_sales:,.0f}")
-col2.metric("📈 Lucro Total", f"${total_profit:,.0f}")
-col3.metric("🧾 Nº de Encomendas", num_orders)
+col1.metric("💰 Vendas Médias", f"${media_VendasServicos:,.0f}")
+col2.metric("📈 Lucro Médio", f"${media_ResultadoLiquido:,.0f}")
+col3.metric("🧾 Nº de Empresas", num_empresas)
 
 st.divider()
 
